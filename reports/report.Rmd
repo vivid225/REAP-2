@@ -1,0 +1,20 @@
+---
+title: "`r params$title`"
+date: "`r format(Sys.time(), '%d %B, %Y')`" 
+output: pdf_document
+params:
+  title: Report
+  plot: NULL
+  table_model: NULL
+  table_esti: NULL
+  table_compare: NULL
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+params$plot
+```
+

@@ -52,16 +52,6 @@ shinyUI(fluidPage(
     includeCSS("reap2.css"),
     
     ########################################
-    # LINK TO NPLR
-    # h5(
-    #   em(
-    #     a("...using R package 'nplr'",
-    #       href="http://cran.r-project.org/web/packages/nplr/index.html",
-    #       target="_blank")
-    #   ),
-    #   align="right"
-    # ),
-    
 
     # INPUT FILE -----
     withTags(

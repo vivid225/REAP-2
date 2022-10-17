@@ -616,53 +616,70 @@ shinyServer(function(input, output) {
   })
   
   ## Download report -----
+  # output$downloadReport <- downloadHandler(
+  #   filename = function() {"Dose-response curves results.csv"},
+  #   content = function(file) {
+  #     output = model.dt()$model
+  #     output = output[,-5]
+  #     colnames(output) <- c("Model","Intercept","Slope (m)","Std. Err for m",
+  #                           "P-value for m>1",
+  #                           "Effect estimation","Std. Err for effect estimation",
+  #                           "Pairwise comparison")
+  #     write.csv(output, file, row.names = FALSE)
+  #   }
+  # )
+  # output$drplot <- downloadHandler(
+  #   filename = function() {"Dose-response curves plot.pdf"},
+  #   content = function(file) {
+  #     ggsave(file,drplots$plottotal, width = input$graphwidth,
+  #            height = input$graphheight)
+  #   }
+  # )
+  
   output$downloadReport <- downloadHandler(
-    filename = function() {"Dose-response curves results.csv"},
-    content = function(file) {
-      output = model.dt()$model
-      output = output[,-5]
-      colnames(output) <- c("Model","Intercept","Slope (m)","Std. Err for m",
-                            "P-value for m>1",
-                            "Effect estimation","Std. Err for effect estimation",
-                            "Pairwise comparison")
-      write.csv(output, file, row.names = FALSE)
-    }
-  )
-  output$drplot <- downloadHandler(
-    filename = function() {"Dose-response curves plot.pdf"},
-    content = function(file) {
-      ggsave(file,drplots$plottotal, width = input$graphwidth,
-             height = input$graphheight)
-    }
-  )
-  
-  output$downloadPLot <- downloadHandler(
     filename <- function(){sprintf("%s.pdf", input$fname)},
-    content <- function(file) {
-      pdf(file, width=6, height=5)
-      models <- test()
-      if(is.null(models))
-        return(NULL)
-      
-      .multiCurve(models,
-                  showPoints = input$points,
-                  showMeans = input$Means,
-                  showSDerr = input$SDerr,
-                  pSize = input$pSize,
-                  lWidth = input$lWidth,
-                  legendSize = input$legendSize,
-                  showAsLog = input$showAsLog,
-                  Legend = input$showLegend,
-                  Cols = getColors(),
-                  xlab=input$xlabel, ylab=input$ylabel,
-                  las = 1
-      )
-      
-      dev.off()
-    },
-    contentType = 'application/pdf'
+    content = function(file) {
+      rmarkdown::render("reports/report.Rmd",
+                        output_file = file, 
+                        params = list(
+                          title = "REAP-2 Report", 
+                          plot = drplots$plotci_scale
+                          # table_model = output$modelsummary,
+                          # table_esti = output$summary,
+                          # table_compare = output$modelcomparison
+                        ),
+                        envir = new.env(),
+                        intermediates_dir = tempdir())
+    }
   )
   
+  # output$downloadReport <- downloadHandler(
+  #   filename <- function(){sprintf("%s.pdf", input$fname)},
+  #   content <- function(file) {
+  #     pdf(file, width=6, height=5)
+  #     models <- mgcvmodels()
+  #     if(is.null(models))
+  #       return(NULL)
+  #     
+  #     .multiCurve(models,
+  #                 showPoints = input$points,
+  #                 showMeans = input$Means,
+  #                 showSDerr = input$SDerr,
+  #                 pSize = input$pSize,
+  #                 lWidth = input$lWidth,
+  #                 legendSize = input$legendSize,
+  #                 showAsLog = input$showAsLog,
+  #                 Legend = input$showLegend,
+  #                 Cols = getColors(),
+  #                 xlab=input$xlabel, ylab=input$ylabel,
+  #                 las = 1
+  #     )
+  #     
+  #     dev.off()
+  #   },
+  #   contentType = 'application/pdf'
+  # )
+  # 
   
 })
 
