@@ -3,18 +3,133 @@ title: "`r params$title`"
 date: "`r format(Sys.time(), '%d %B, %Y')`" 
 output: pdf_document
 params:
-  title: Report
+  title: REAP-2 Report
+  set_logd: NULL
+  set_effest: NULL
+  set_dtpt: NULL
+  set_smean: NULL
+  set_stderr: NULL
+  set_plotlog10: NULL
   plot: NULL
   table_model: NULL
   table_esti: NULL
   table_compare: NULL
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage{xcolor}
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r include=FALSE}
+library(dplyr)
+library(kableExtra)
+```
+
+
+## Setting
+
+This section will record the modeling and plotting settings in the Shiny app to generate the report.
+
+
+```{r echo=FALSE}
+modelfeature <- data.frame(Features = c("Log transform dose level", "Effect estimation"))
+modelfeature$Input <- c(params$set_logd, params$set_effest)
+modelfeature %>%
+  kbl(caption = "Model features", align = "l", booktabs = T) %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(latex_options = c("striped","hold_position"))
+```
+
+```{r echo=FALSE}
+plotfeature <- data.frame(Features = c("Plot raw data points", "Plot sample mean", "Plot Std. Dev. intervals",
+                                       "Show log10 transformed dose levels"))
+plotfeature$Input <- c(params$set_dtpt, params$set_smean, params$set_stderr, params$set_plotlog10)
+plotfeature %>%
+  kbl(caption = "Plot features", align = "l", booktabs = T) %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(latex_options = c("striped","hold_position"))
+```
+
+
+## Dose-response curve plot
+
+```{r echo=FALSE, warning=FALSE, fig.height = 6, fig.width = 10, fig.align = "center"}
 params$plot
 ```
+
+
+```{r echo=FALSE}
+modelsum.dt = params$table_model
+
+modelsum.dt %>%
+  kbl(caption = "Model summary table", align = "c", booktabs = T) %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+  # kable_material(c("striped"))
+```
+
+
+```{r echo=FALSE}
+dt.footnote <- params$table_esti
+
+dt.footnote <- readRDS("/Users/rrrrrita/Documents/GitHub/REAP-2/dt.footnote.rds")
+
+names_spaced <- c(
+      ' ', 'Estimate (m)', 'Std.Err.', 
+      'm > 1',' ',                 
+      'Estimate', 'Std.Err.','Pairwise comparison')
+    
+hd = paste("IC/EC",50,"Estimation")
+    
+
+options(knitr.kable.NA = '')
+    dt.footnote %>%
+      dplyr::select(Model,Slope,Slope.Std.Err,Slope.z.Pvalue,IC10,IC10.Std.Err,IC10.Pvalue)%>%
+      mutate(Slope = abs(Slope)) %>%
+      tibble::add_column(new_col = NA, .after = c("Slope.z.Pvalue"))%>%
+      kbl(align = "c",col.names=names_spaced, booktabs = T, caption="Slope and effect estimations") %>%
+      kable_styling(latex_options = c("striped", "hold_position")) %>%
+      column_spec(c(2,4,6,8), width = "5em") %>%
+      column_spec(c(5), width = "2em") %>%
+      add_header_above(c(" " = 1, "Hill Coefficient" = 3, " "=1, "Effect Estimation" = 3))%>%
+      footnote(
+        number = c("m > 1: p-value based on one-sided t-test for hypothesis testing on hill coefficient > 1", 
+                   "Pairwise comparison: p-value based on ANOVA test (Cohen, 2000). Concentrations that give specified effect (default at 50%) by group were sorted from low to high. Hypothesis testings on equal potency (i.e., concentration for ED50/IC50 by default) were conducted pairwise with the group right above (one rank lower).",
+                   "95% confidence intervals can be approximated by Estimate +/- t-value(0.975, df=n-1)*Std.Err.",
+                   "Effect estimate is indicated by triangles in the dose-response curve plot."),
+        threeparttable = T
+      )
+```
+
+
+```{r echo=FALSE}
+comp <- params$table_compare
+
+if (!is.null(comp)){
+  comp %>%
+    kbl(align = "l",col.names = NULL, booktabs = T, caption="Model comparison hypothesis testing result") %>%
+    kable_classic(full_width = F, html_font = "Cambria") %>%
+    kable_styling(latex_options = c("striped", "hold_position"))
+    # kable_material(c("striped"))
+    # kable_styling("striped") 
+} else {
+  print("There is no model comparison information.")
+}
+```
+
 

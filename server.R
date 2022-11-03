@@ -62,7 +62,7 @@ shinyServer(function(input, output) {
   })
   
   ## model fitting -----
-  mgcvmodels <- eventReactive(input$submitbutton,{
+  mgcvmodels <- reactive({
     
     truncated = 1e-9
     
@@ -196,8 +196,18 @@ shinyServer(function(input, output) {
     # sizenum=10* (ciwidth+0.2)
     sizenum = input$pSize
     linesize = input$lineSize
-    xlabel = input$xlabel
-    ylabel = input$ylabel
+    
+    if (input$xlabel == ''){
+      xlabel = gsub("."," ", fulldt.nms[1],fixed=TRUE)
+    } else {
+      xlabel = input$xlabel
+    }
+    
+    if (input$ylabel == ''){
+      ylabel = gsub("."," ", fulldt.nms[2],fixed=TRUE)
+    } else {
+      ylabel = input$ylabel
+    }
     
     # if (input$cbox_logconc){
     #   xval =
@@ -206,7 +216,7 @@ shinyServer(function(input, output) {
     # Line plot only
     p <- ggplot() +
       geom_line(aes(x = beta.pred.total[,1], y = beta.pred.total[,2], color=beta.pred.total[,3]), size=linesize)+
-      xlab(xlabel) + ylab(paste(ylabel,"(in %)")) +
+      xlab(xlabel) + ylab(ylabel) +
       labs(color=fulldt.nms[3], shape=fulldt.nms[3]) 
     
     if (input$showAsLog){
@@ -472,7 +482,7 @@ shinyServer(function(input, output) {
   })
   
   ## model summary table -----
-  output$modelsummary <- renderText({
+  formulatbl <- reactive({
     
     models = mgcvmodels()
     n = length(models)
@@ -512,14 +522,20 @@ shinyServer(function(input, output) {
                               Formula = modelsum,
                               AIC = round(aiclist,3))
     
+  })
+  
+  output$modelsummary <- renderText({
+    
+    modelsum.dt <- formulatbl()
     modelsum.dt %>% 
       kable(align = "c") %>%
       kable_styling("striped") 
   })
   
+  
   # Model comparison table-----
-  output$modelcomparison <- renderText({
-    
+  
+  modelcomparisonresults <- reactive({
     if (length(compare.pval())==1){
       comp_models <- data.frame(col1 = c("Null hypothesis", "Alternative hypothesis",
                                          "P-value"),
@@ -569,6 +585,15 @@ shinyServer(function(input, output) {
     if (input$cbox_effectest == TRUE & input$cbox_slopes == TRUE){
       comp = comp_models
     }
+    
+    comp
+    
+  })
+  
+  output$modelcomparison <- renderText({
+    
+    comp <- modelcomparisonresults()
+    
     if (input$cbox_effectest == FALSE & input$cbox_slopes == FALSE){
       comp
     } else {
@@ -581,6 +606,7 @@ shinyServer(function(input, output) {
   
   
   # Estimation summary -----
+  
   output$summary <- renderText({
     
     names_spaced <- c(
@@ -616,25 +642,6 @@ shinyServer(function(input, output) {
   })
   
   ## Download report -----
-  # output$downloadReport <- downloadHandler(
-  #   filename = function() {"Dose-response curves results.csv"},
-  #   content = function(file) {
-  #     output = model.dt()$model
-  #     output = output[,-5]
-  #     colnames(output) <- c("Model","Intercept","Slope (m)","Std. Err for m",
-  #                           "P-value for m>1",
-  #                           "Effect estimation","Std. Err for effect estimation",
-  #                           "Pairwise comparison")
-  #     write.csv(output, file, row.names = FALSE)
-  #   }
-  # )
-  # output$drplot <- downloadHandler(
-  #   filename = function() {"Dose-response curves plot.pdf"},
-  #   content = function(file) {
-  #     ggsave(file,drplots$plottotal, width = input$graphwidth,
-  #            height = input$graphheight)
-  #   }
-  # )
   
   output$downloadReport <- downloadHandler(
     filename <- function(){sprintf("%s.pdf", input$fname)},
@@ -643,43 +650,23 @@ shinyServer(function(input, output) {
                         output_file = file, 
                         params = list(
                           title = "REAP-2 Report", 
-                          plot = drplots$plotci_scale
-                          # table_model = output$modelsummary,
-                          # table_esti = output$summary,
-                          # table_compare = output$modelcomparison
+                          set_logd = input$cbox_logconc,
+                          set_effest = input$effectpct,
+                          set_dtpt = input$Points,
+                          set_smean = input$Means,
+                          set_stderr = input$SDerr,
+                          set_plotlog10 = input$showAsLog,
+                          plot = drplots$plotci_scale,
+                          table_model = formulatbl(),
+                          table_esti = model.dt()$model,
+                          table_compare = modelcomparisonresults()
                         ),
                         envir = new.env(),
                         intermediates_dir = tempdir())
     }
   )
-  
-  # output$downloadReport <- downloadHandler(
-  #   filename <- function(){sprintf("%s.pdf", input$fname)},
-  #   content <- function(file) {
-  #     pdf(file, width=6, height=5)
-  #     models <- mgcvmodels()
-  #     if(is.null(models))
-  #       return(NULL)
-  #     
-  #     .multiCurve(models,
-  #                 showPoints = input$points,
-  #                 showMeans = input$Means,
-  #                 showSDerr = input$SDerr,
-  #                 pSize = input$pSize,
-  #                 lWidth = input$lWidth,
-  #                 legendSize = input$legendSize,
-  #                 showAsLog = input$showAsLog,
-  #                 Legend = input$showLegend,
-  #                 Cols = getColors(),
-  #                 xlab=input$xlabel, ylab=input$ylabel,
-  #                 las = 1
-  #     )
-  #     
-  #     dev.off()
-  #   },
-  #   contentType = 'application/pdf'
-  # )
-  # 
+
+ 
   
 })
 

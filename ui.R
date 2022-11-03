@@ -77,6 +77,26 @@ shinyUI(fluidPage(
       # )
     ),
     
+    ########################################
+    # SUBMIT BUTTON
+    # withTags(div(class="col-sm-12 section-title", h3("Submit"))),
+    # withTags(
+    #   div(class="row",
+    #       # div(class="col-sm-12", id="saving-subtitle", h4("Filename (without extension)")),
+    #       # div(class="col-sm-12", id="fileName", textInput("fname", '', 'myResults')),
+    #       div(class='col-sm-12',
+    #           # div(class='col-sm-6 submit-btn', submitButton("submitSetting", "Submit"))
+    #           div(class='col-sm-6 submit-btn', 
+    #               shinyWidgets::actionBttn(inputId = "submitbutton",
+    #                                        label = "Submit data",
+    #                                        color = "primary",
+    #                                        style = "pill"
+    #               ))
+    #           # div(class='col-sm-6 save-btn', downloadButton("downloadData", class="btn-lg btn-success", "Save Results"))
+    #       )
+    #   )
+    # ),
+    
     
     # Model features -----
     withTags(div(class="col-sm-12 section-title", h3("Model Feature"))),
@@ -147,31 +167,13 @@ shinyUI(fluidPage(
          
           # Name axes
           div(class="row",
-              div(class='col-xs-6', textInput("xlabel", 'x-axis name', "Log10(Conc.)")),
-              div(class='col-xs-6', textInput("ylabel", 'y-axis name', 'Response (Vs. control)'))
+              div(class='col-xs-6', textInput("xlabel", 'x-axis name', '')),
+              div(class='col-xs-6', textInput("ylabel", 'y-axis name', ''))
           )
       )
     ),
     
-    ########################################
-    # SUBMIT BUTTON
-    # withTags(div(class="col-sm-12 section-title", h3("Submit"))),
-    withTags(
-      div(class="row",
-          # div(class="col-sm-12", id="saving-subtitle", h4("Filename (without extension)")),
-          # div(class="col-sm-12", id="fileName", textInput("fname", '', 'myResults')),
-          div(class='col-sm-12',
-              # div(class='col-sm-6 submit-btn', submitButton("submitSetting", "Submit"))
-              div(class='col-sm-6 submit-btn', 
-                  shinyWidgets::actionBttn(inputId = "submitbutton",
-                                           label = "Submit",
-                                           color = "primary",
-                                           style = "pill"
-                                           ))
-              # div(class='col-sm-6 save-btn', downloadButton("downloadData", class="btn-lg btn-success", "Save Results"))
-          )
-      )
-    ),
+    
     
     ########################################
     # DOWNLOAD BUTTONS
@@ -198,21 +200,19 @@ shinyUI(fluidPage(
                
                withTags(					
                  div(class = "col-sm-12",
-                     h3(id="model-summary", "Objective", align="center"),
-                     p(id="paragraph","The Robust and Efficient Assessment of drug Potency (REAP) is 
-                             developed for convenient application of the robust dose-response 
-                             estimation to real-world data analysis. It presents a straightforward 
-                             analytic environment for robust estimation of dose-response curve 
-                             and assessment of key statistics, including implementation of 
-                             statistical comparisons and delivery of customized output for 
-                             graphic presentation.", align = "justify")
-                     # tableOutput('summary')
+                     h3(id="model-summary", "Welcome to REAP-2!", align="left"),
+                     p(id="paragraph","REAP-2 is an updated version of REAP, the Robust and Efficient Assessment of drug Potency.
+                             It is developed for convenient application of the robust dose-response
+                             estimation to real-world data analysis. ", align = "justify"),
+                     p(id="paragraph","The previous version REAP can be reached at ",
+                       a(href = 'https://xinying-fang.shinyapps.io/REAP/', 'https://xinying-fang.shinyapps.io/REAP/', .noWS = "outside"), '.', .noWS = c("after-begin", "before-end")),
+                     p(id="paragraph","Check here to obtain the manual for REAP-2: ")
                  )
                ),
                
                withTags(					
                  div(class = "col-sm-12",
-                     h3(id="model-summary", "Reference", align="center"),
+                     h3(id="model-summary", "Reference", align="left"),
                      p(id="paragraph","Zhou, S*, Liu, X*, Fang, X*, Chinchilli, VM, Wang, M, Wang, HG, Dokholyan, NV, Shen, C, Lee, JJ. (2021) Robust and Efficient Assessment of Potency (REAP): A Quantitative Tool for Dose-response Curve Estimation. doi:10.1101/2021.11.20.469388"),
                      p(id="paragraph","Fang, X, Zhou, S. (2022) A Comparative Simulation Study of In Vitro Dose-response Estimation under Extreme Observations. In review."),
                      p(id="paragraph","Shiny app designed based on: Common F.  https://github.com/fredcommo/curveFitter")
@@ -231,17 +231,17 @@ shinyUI(fluidPage(
                      div(class="col-xs-4",
                          div(class="col-xs-12 radioText", "Points size"),
                          div(class="col-xs-12 slider-input",
-                             sliderInput("pSize", label="", min=0, max=5, value=1, step=.1))
+                             sliderInput("pSize", label="", min=0, max=5, value=2, step=.1))
                      ),
                      
-                     # Line width slider
+                     # StdDev interval width slider
                      div(class="col-xs-4",
-                         div(class="col-xs-12 radioText", "StdDev width"),
+                         div(class="col-xs-12 radioText", "StdDev interval width"),
                          div(class="col-xs-12 slider-input",
-                             sliderInput("lWidth", label="", min=0, max=0.1, value=.01, step=.01))
+                             sliderInput("lWidth", label="", min=0, max=0.1, value=.03, step=.01))
                      ),
                      
-                     # Legend size slider
+                     # Line size slider
                      div(class="col-xs-4",
                          div(class="col-xs-12 radioText", "Line size"),
                          div(class="col-xs-12 slider-input",
@@ -261,29 +261,6 @@ shinyUI(fluidPage(
                plotOutput("plot123"), # Plot output
                
                
-               # h6(verbatimTextOutput("checkFile"),
-               #    style="visibility: collapse; height: 0px;"),
-               # 
-               # conditionalPanel(
-               #   condition = "output.checkFile == '0'",
-               #   div(class="col-sm-12",
-               #       uiOutput('message'),
-               #       imageOutput("welcomeImage")
-               #   )
-               # ),
-               # 
-               # conditionalPanel(
-               #   "output.checkFile == '1'",
-               #   plotOutput("plot", width = "100%", height = "100%")
-               # )
-               
-               # withTags(
-               # 	div(class='row',
-               # 		uiOutput('message'),
-               # 		div(class = "col-sm-12", plotOutput('plot'))
-               # 		)
-               # 	)
-               
       ), # tabpanel Curve
       
       tabPanel("Summary",
@@ -300,18 +277,6 @@ shinyUI(fluidPage(
                      
                  )
                )
-               # withTags(					
-               #   div(class = "col-sm-12",
-               #       h3(id="model-summary", "Summary", align="center"),
-               #       htmlOutput('summary')
-               #   )
-               # ),
-               # withTags(					
-               #   div(class = "col-sm-12",
-               #       h3(id="model-summary", "Model comparison", align="center"),
-               #       htmlOutput('modelcomparison')
-               #   )
-               # )
       ) # tabpanel summary
       
     ) #tabsetPanel
