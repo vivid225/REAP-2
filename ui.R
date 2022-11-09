@@ -206,7 +206,8 @@ shinyUI(fluidPage(
                              estimation to real-world data analysis. ", align = "justify"),
                      p(id="paragraph","The previous version REAP can be reached at ",
                        a(href = 'https://xinying-fang.shinyapps.io/REAP/', 'https://xinying-fang.shinyapps.io/REAP/', .noWS = "outside"), '.', .noWS = c("after-begin", "before-end")),
-                     p(id="paragraph","Check here to obtain the manual for REAP-2: ")
+                     p(id="paragraph","Check here to obtain the user guide for REAP-2: ",
+                       a(href = 'https://github.com/vivid225/REAP-2/blob/main/REAP-2%20User%20Guide.pdf', 'REAP-2 User Guide', .noWS = "outside"), '.', .noWS = c("after-begin", "before-end"))
                  )
                ),
                

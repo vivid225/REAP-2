@@ -5,10 +5,10 @@ account: xinying-fang
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 7561881
-bundleId: 6489489
+bundleId: 6494283
 url: https://xinying-fang.shinyapps.io/REAP-2/
-when: 1667923149.04031
-lastSyncTime: 1667923149.04032
+when: 1668008264.38108
+lastSyncTime: 1668008264.38108
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: dt.footnote.rds|New template/ui.R|testcode.R
+ignoredFiles: dt.footnote.rds|New template/ui.R|REAP-2 User Guide.docx|testcode.R
