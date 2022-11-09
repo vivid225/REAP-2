@@ -14,6 +14,7 @@ params:
   table_model: NULL
   table_esti: NULL
   table_compare: NULL
+  warningmsg: NULL
 header-includes:
 - \usepackage{booktabs}
 - \usepackage{longtable}
@@ -68,6 +69,13 @@ plotfeature %>%
 
 ## Dose-response curve plot
 
+```{r echo=FALSE, warning=FALSE}
+# warning(warningmsg[[1]])
+# warning(warningmsg[[2]])
+print(warningmsg)
+```
+
+
 ```{r echo=FALSE, warning=FALSE, fig.height = 6, fig.width = 10, fig.align = "center"}
 params$plot
 ```
@@ -86,8 +94,6 @@ modelsum.dt %>%
 
 ```{r echo=FALSE}
 dt.footnote <- params$table_esti
-
-dt.footnote <- readRDS("/Users/rrrrrita/Documents/GitHub/REAP-2/dt.footnote.rds")
 
 names_spaced <- c(
       ' ', 'Estimate (m)', 'Std.Err.', 

@@ -115,7 +115,7 @@ shinyUI(fluidPage(
     ),
     
     withTags(
-      div(class='col-xs-12 btn-input', numericInput(inputId = "effectpct", "Add effect estimation",value=50, min=0, max=100))
+      div(class='col-xs-12 btn-input', numericInput(inputId = "effectpct", "Add potency estimation",value=50, min=0, max=100))
     ),
     
     
@@ -125,7 +125,7 @@ shinyUI(fluidPage(
     withTags(
       div(class="row",
           div(class="col-xs-12 btn-input",
-              div(class="col-xs-9 checkboxText", "Effect estimations"),
+              div(class="col-xs-9 checkboxText", "Potency estimations"),
               div(class="col-xs-3", checkboxInput('cbox_effectest', 'yes', FALSE))
           )
       )
@@ -266,6 +266,15 @@ shinyUI(fluidPage(
       tabPanel("Summary",
                withTags(					
                  div(class = "col-sm-12",
+                     h3(id="model-summary", "Statistical methods", align="center"),
+                     p(id="paragraph","REAP-2 updates REAP by changing the underlying method 
+                     with the penalized beta regression. The estimation of the penalized beta regression is accomplished by 
+                       the mgcv package (Wood, 2017). It was developed to estimate the penalized 
+                       generalized linear models by adding the L2 ridge penalty on the log-likelihood 
+                       function with a tuning parameter. The parameter estima-tions are obtained 
+                       through maximizing the penalized likelihood with the penalized iteratively 
+                       re-weighted least squares (P-IRLS) by mgcv.", align = "justify"),
+                     
                      h3(id="model-summary", "Model(s) summary", align="center"),
                      htmlOutput('modelsummary'),
                      

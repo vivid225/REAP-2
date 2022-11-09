@@ -34,7 +34,7 @@ shinyServer(function(input, output) {
   })
   
   ## Output warning message -----
-  output$text_warning1 <- renderText({
+  warningmsg <- reactive({
     fulldt <- do.call(rbind, dt.input$data)
     rownames(fulldt) = NULL
     text1 = NULL
@@ -46,7 +46,29 @@ shinyServer(function(input, output) {
             before uploading the dataset. "
     }
     
+    text2 = NULL
+    if (any(is.na(fulldt))){
+      text2 = "Your data contains missing values or some dose levels are non-positive. We delete the relavant observation to
+      ensure the following analysis."
+    }
+    
     text1
+  })
+  
+  output$text_warning1 <- renderText({
+    # fulldt <- do.call(rbind, dt.input$data)
+    # rownames(fulldt) = NULL
+    # text1 = NULL
+    # if (any(fulldt[,2] <=0)==TRUE | any(fulldt[,2]>=1)==TRUE){
+    #   text1 = "Observations about the data are unreliable. Some of your drug effects are out of (0,1).
+    #         For better analysis, we truncate the extreme values to be within (0,1), which may increase
+    #         the robustness of the dose response estimation. However, it is
+    #         suggested that you perform the truncation or transformation yourself
+    #         before uploading the dataset. "
+    # }
+    # 
+    # text1
+    warningmsg()[[1]]
   })
   
   output$text_warning2 <- renderText({
@@ -60,6 +82,7 @@ shinyServer(function(input, output) {
     
     text2
   })
+  
   
   ## model fitting -----
   mgcvmodels <- reactive({
@@ -545,8 +568,8 @@ shinyServer(function(input, output) {
       
       comp_ic50 <- data.frame(col1 = c("Null hypothesis", "Alternative hypothesis",
                                        "P-value"),
-                              col2 = c("Effect estimation same for all the agents",
-                                       "At least one effect estimation is different from other agents",
+                              col2 = c("Potency estimation same for all the agents",
+                                       "At least one potency estimation is different from other agents",
                                        "Only one model for the dataset. No comparison is conducted."))
       
       comp_slope <- data.frame(col1 = c("Null hypothesis", "Alternative hypothesis",
@@ -563,8 +586,8 @@ shinyServer(function(input, output) {
       
       comp_ic50 <- data.frame(col1 = c("Null hypothesis", "Alternative hypothesis",
                                        "P-value"),
-                              col2 = c("Effect estimation same for all the agents",
-                                       "At least one effect estimation is different from other agents",
+                              col2 = c("Potency estimation same for all the agents",
+                                       "At least one potency estimation is different from other agents",
                                        model.dt()$ic10.anova.pval))
       
       comp_slope <- data.frame(col1 = c("Null hypothesis", "Alternative hypothesis",
@@ -631,7 +654,7 @@ shinyServer(function(input, output) {
       kable_styling("striped") %>%
       column_spec(c(2,4,6,8), width = "6em") %>%
       column_spec(c(5), width = "4em") %>%
-      add_header_above(c(" " = 1, "Hill Coefficient" = 3, " "=1, "Effect Estimation" = 3))%>%
+      add_header_above(c(" " = 1, "Hill Coefficient" = 3, " "=1, "Potency Estimation" = 3))%>%
       footnote(
         number = c("m > 1: p-value based on one-sided t-test for hypothesis testing on hill coefficient > 1", 
                    "Pairwise comparison: p-value based on ANOVA test (Cohen, 2000). Concentrations that give specified effect (default at 50%) by group were sorted from low to high. Hypothesis testings on equal potency (i.e., concentration for ED50/IC50 by default) were conducted pairwise with the group right above (one rank lower).",
@@ -659,7 +682,8 @@ shinyServer(function(input, output) {
                           plot = drplots$plotci_scale,
                           table_model = formulatbl(),
                           table_esti = model.dt()$model,
-                          table_compare = modelcomparisonresults()
+                          table_compare = modelcomparisonresults(),
+                          warningmsg = warningmsg()
                         ),
                         envir = new.env(),
                         intermediates_dir = tempdir())

@@ -1,0 +1,14 @@
+name: REAP-2
+title: REAP-2
+username:
+account: xinying-fang
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7561881
+bundleId: 6489489
+url: https://xinying-fang.shinyapps.io/REAP-2/
+when: 1667923149.04031
+lastSyncTime: 1667923149.04032
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: dt.footnote.rds|New template/ui.R|testcode.R
