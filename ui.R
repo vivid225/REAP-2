@@ -56,16 +56,17 @@ shinyUI(fluidPage(
     # INPUT FILE -----
     withTags(
       div(class="col-sm-12 section-title",
-          h3("Choose a file", em(id="supportedFiles", "(.csv, .tsv, .txt)"))
-      )
+          h3("Choose a file", em(id="supportedFiles", "(.csv, .tsv, .txt)")))
     ),
+    
+    # withTags(
+    #   div(class="col-xs-12 radioText", 
+    #       a(href='www/31780660_F1B_exampledata.csv', 
+    #         target='blank', 'Example Data', download = 'www/31780660_F1B_exampledata.csv'))
+    # ),
+    
     withTags(
-      # div(
-      # class="row",
-      # div(class="col-xs-12 btn-input",
-      #     div(class="col-xs-6 checkboxText", "File with headers"),
-      #     div(class="col-xs-6", checkboxInput('header', 'yes', TRUE))
-      # ),
+      
       div(class="col-xs-12", id="inputFile",
           fileInput('file1', '',
                     accept=c('text/csv',
@@ -205,7 +206,7 @@ shinyUI(fluidPage(
                              It is developed for convenient application of the robust dose-response
                              estimation to real-world data analysis. ", align = "justify"),
                      p(id="paragraph","The previous version REAP can be reached at ",
-                       a(href = 'https://xinying-fang.shinyapps.io/REAP/', 'https://xinying-fang.shinyapps.io/REAP/', .noWS = "outside"), '.', .noWS = c("after-begin", "before-end")),
+                       a(href = 'https://xinying-fang.shinyapps.io/REAP/', 'REAP Shiny app', .noWS = "outside"), '.', .noWS = c("after-begin", "before-end")),
                      p(id="paragraph","Check here to obtain the user guide for REAP-2: ",
                        a(href = 'https://github.com/vivid225/REAP-2/blob/main/REAP-2%20User%20Guide.pdf', 'REAP-2 User Guide', .noWS = "outside"), '.', .noWS = c("after-begin", "before-end"))
                  )
